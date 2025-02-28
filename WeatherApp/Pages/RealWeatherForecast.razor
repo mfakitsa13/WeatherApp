@@ -1,0 +1,150 @@
+﻿@page "/"
+@using WeatherApp.Data
+@using System.ComponentModel.DataAnnotations;
+@using WeatherApp.Service
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="WeatherApp.styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+</head>
+<body>
+        <PageTitle>Weather Forecast</PageTitle>
+        @if (isLoading)
+        {
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading, please wait...</p>
+            </div>
+        }
+        else
+        {
+        <h2>Weather Forecast</h2>
+       
+        <EditForm Model="city" OnValidSubmit="GetWeatherByCityAsync">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <span class="material-symbols-outlined">
+                    location_on
+                </span>
+                    <InputText class="form-control" @bind-Value="@city.CityName" placeholder="Enter location" />
+                    <ValidationMessage For="@(() => city.CityName)" />
+            </div>
+
+                 <div class="card-container">
+                <div class="card" style="width: 30vw">
+                    <h6 class="date">
+                        @DateTime.Today.ToString("dd MMM yyyy")</h6>
+                        <div class="card-body">
+                            @if (weatherInfo != null)
+                            {
+                                <p class="city-name">
+                                    @weatherInfo.name
+                                </p>
+                                <img class="icon" src="@($"https://openweathermap.org/img/wn/{weatherInfo.weather[0].icon}@2x.png")" />
+                                <div class="table-container">
+                                <table class="table">
+                                    <tr>
+                                       <p class="card-txt">
+                                         <td><span class="material-symbols-outlined">thermometer</span></td>
+                                         <td>Temperature: @weatherInfo.main.temp °C</td>
+
+                                       </p>
+                                    </tr>
+                                    <tr>
+                                       <p class="card-txt">
+                                         <td><span class="material-symbols-outlined">person</span></td>
+                                         <td>Feels like: @weatherInfo.main.feels_like °C</td>
+                                       </p>
+                                    </tr>
+                                    <tr>
+                                       <p class="card-txt">
+                                          <td><span class="material-symbols-outlined"> humidity_percentage</span></td>
+                                          <td>Humidity: @weatherInfo.main.humidity %</td>
+                                       </p>
+                                    </tr>
+                                    <tr>
+                                        <p class="card-sun">
+                                           <td><span class="material-symbols-outlined"> sunny</span></td>
+                                           <td> @localTimeSunrise.ToString("dd MMMM yyyy HH:mm")</td>
+                                       </p>
+                                    </tr>
+                                     <tr>
+                                        <p class="card-sun">
+                                           <td><span class="material-symbols-outlined"> wb_twilight</span></td>
+                                           <td> @localTimeSunset.ToString("dd MMMM yyyy HH:mm") </td>
+                                       </p>
+                                    </tr>
+                                </table>
+                                </div>
+                                <br /><br />
+                                if (weatherInfo.main.temp <= 0)
+                                { 
+                                   <h6 class="typewriter">
+                                       <p>• Stay Warm</p>
+                                       <p>• Avoid prolonged exposure to the cold</p>
+                                       <p>• Drive carefully on icy roads and keep an emergency kit in your car.</p>
+                                       <p>• Stay Hydrated</p>
+                                       <p>• Avoid Alcohol</p>
+                                   </h6>
+                                }
+                                else if (weatherInfo.main.temp > 0 && weatherInfo.main.temp <= 10)
+                                {
+                                    <h6 class="typewriter">
+                                       <p>• Dress in Layers</p>
+                                       <p>• Home Heating</p>
+                                       <p>• Exercise Caution</p>
+                                       <p>• Use moisturizer to prevent dry skin and lip balm to avoid chapped lips.</p>
+                                     </h6>
+                                }
+                                else if (weatherInfo.main.temp > 10 && weatherInfo.main.temp <= 20)
+                                {
+                                   <h6 class="typewriter">
+                                       <p>• Light Layers</p>
+                                       <p>• Outdoor Activities</p>
+                                       <p>• Stay Hydrated</p>
+                                   </h6>
+                                }
+                                else if (weatherInfo.main.temp > 20 && weatherInfo.main.temp <= 30)
+                                {
+                                    <h6 class="typewriter">
+                                       <p>• Dress Lightly</p>
+                                       <p>• Sun Protection</p>
+                                       <p>• Stay Hydrated</p>
+                                       <p>• Exercise Wisely</p>
+                                    </h6>
+                                }
+                                else
+                                {
+                                    <h6 class="typewriter">
+                                       <p>• Stay Indoors</p>
+                                       <p>• Hydration</p>
+                                       <p>• Light Clothing</p>
+                                       <p>• Cool Showers</p>
+                                       <p>• Know Heat Illness Signs</p>
+                                    </h6>
+                                }
+                            }
+                            else if(weatherInfo == null || city.CityName == null)
+                            {
+                                <p class="data">There are no data!</p>
+                            }
+                           
+                        </div>
+                    </div>
+                    
+                </div>
+        </EditForm>
+        }
+</body>
+</html>
+
+
